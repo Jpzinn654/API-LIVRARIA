@@ -1,7 +1,7 @@
 const express = require('express');
 
 const upload = require("../helpers/upload/uploadImagem")
-
+const deleteImagem = require("../helpers/upload/deleteImagem")
 const modelLivro = require('../model/modelLivro');
 
 const router = express.Router();
@@ -73,7 +73,7 @@ router.get('/listarLivroCodigo/:id', (req, res)=>{
         });
 });
 
-router.delete('/excluirLivro/:id', (req, res)=>{
+router.get('/excluirLivro/:id', (req, res)=>{
 
     const { id } = req.params;
 
@@ -81,10 +81,22 @@ router.delete('/excluirLivro/:id', (req, res)=>{
 
         .then((livro)=>{
 
+            let imagen_grd = livro.imagen_grd;
+            let imagen_peq = livro.imagen_peq;
+
+            // console.log("Imagem Grande" + imagen_grd )
+            // console.log("Imagem peq" + imagen_peq)
+            // res.send('teste de exclusão de imagens')
+
             modelLivro.destroy({
-                where:{id}
+                where:{cod_livro:id}
             }).then(
                 ()=>{
+
+                    //EXCLUSÃO DE ARQUIVOS
+
+                    deleteImagem(imagen_grd);
+                    deleteImagem(imagen_peq);
 
                     return res.status(200).json({
                         erroStatus:false,
